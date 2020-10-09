@@ -81,6 +81,7 @@
                     <navigationItem key="navigationItem" id="FRr-60-fIS"/>
                     <connections>
                         <outlet property="logoView" destination="Fmw-bG-A9c" id="73r-jS-80z"/>
+                        <outlet property="signInButton" destination="O3J-zE-kiQ" id="w9n-If-3W0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
