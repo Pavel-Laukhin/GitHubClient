@@ -89,12 +89,19 @@ class HelloViewController: UIViewController {
         button.addTarget(self, action: #selector(startSearchButtonPressed), for: .touchUpInside)
         return button
     }()
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        return scrollView
+    }()
+    private var keyboardWillChangeFrameObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
         addSubviews()
+        registerForKeyboardWillChangeFrameNotification()
+        addTapGestureRecognizer()
     }
     
     override func viewWillLayoutSubviews() {
@@ -103,7 +110,15 @@ class HelloViewController: UIViewController {
         setupSubviews()
     }
     
+    deinit {
+        if let keyboardWillChangeFrameObserver = self.keyboardWillChangeFrameObserver {
+            NotificationCenter.default.removeObserver(keyboardWillChangeFrameObserver)
+        }
+    }
+    
     private func addSubviews() {
+        view.addSubview(scrollView)
+        turnOffAutoResisingMask(scrollView)
         [helloLabel,
          avatarView,
          searchLabel,
@@ -115,16 +130,22 @@ class HelloViewController: UIViewController {
          segmentedControl,
          startSearchButton
         ].forEach {
-            view.addSubview($0)
+            scrollView.addSubview($0)
             turnOffAutoResisingMask($0)
         }
     }
     
     private func setupSubviews() {
         let avatarWidth = view.bounds.width / 3
+        avatarView.layer.cornerRadius = avatarWidth / 2
         
         NSLayoutConstraint.activate([
-            helloLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            helloLabel.topAnchor.constraint(equalTo: scrollView.safeAreaLayoutGuide.topAnchor, constant: 40),
             helloLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             avatarView.topAnchor.constraint(equalTo: helloLabel.bottomAnchor, constant: 20),
@@ -160,7 +181,9 @@ class HelloViewController: UIViewController {
             startSearchButton.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 40),
             startSearchButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
-        avatarView.layer.cornerRadius = avatarWidth / 2
+        
+        let contentSize = CGSize(width: view.bounds.width, height: view.bounds.height - view.safeAreaInsets.top)
+        scrollView.contentSize = contentSize
     }
     
     @objc private func switchHandler() {
@@ -197,9 +220,35 @@ class HelloViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    // Метод, который убирает клавиатуру после того, как закончилось редактирование
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
+    // MARK: - Keyboard obscuring correction
+
+    private func registerForKeyboardWillChangeFrameNotification() {
+        let keyboardWillChangeFrameClosure = { (notification: Notification) in
+            guard let userInfo = notification.userInfo, let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+                return
+            }
+            let convertedKeyboardFrame = self.scrollView.convert(keyboardFrame, from: nil)
+            let intersectionFrame = convertedKeyboardFrame.intersection(self.scrollView.frame)
+            let keyboardOffset = (convertedKeyboardFrame.intersects(self.starsNumberTextField.frame)) ? intersectionFrame.size.height : 0
+            let insets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardOffset, right: 0)
+            self.scrollView.contentInset = insets
+            self.scrollView.scrollIndicatorInsets = insets
+            self.scrollView.scrollRectToVisible(self.starsNumberTextField.frame, animated: true)
+        }
+        keyboardWillChangeFrameObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: .main, using: keyboardWillChangeFrameClosure)
+    }
+    
+    private func addTapGestureRecognizer() {
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler(_:)))
+        view.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    @objc
+    private func tapGestureHandler(_ sender: UITapGestureRecognizer) {
+        [repositoryNameTextField,
+         languageTextField,
+         starsNumberTextField
+        ].forEach { $0.resignFirstResponder() }
     }
     
 }
