@@ -31,5 +31,10 @@ class LoginViewController: UIViewController {
         signInButton.layer.cornerRadius = 6
     }
 
+    @IBAction func signInButtonPressed(_ sender: UIButton) {
+        let vc = HelloViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
 }
 
