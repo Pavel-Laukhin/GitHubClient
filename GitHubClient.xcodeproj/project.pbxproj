@@ -16,6 +16,7 @@
 		E998EA4025305DF200F159CF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E998EA3E25305DF200F159CF /* Main.storyboard */; };
 		E998EA4225305DF500F159CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E998EA4125305DF500F159CF /* Assets.xcassets */; };
 		E998EA4525305DF500F159CF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E998EA4325305DF500F159CF /* LaunchScreen.storyboard */; };
+		E9EAEA942534A2F200C1AD43 /* UIViewController+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EAEA932534A2F200C1AD43 /* UIViewController+Ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		E998EA4125305DF500F159CF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E998EA4425305DF500F159CF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E998EA4625305DF500F159CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E9EAEA932534A2F200C1AD43 /* UIViewController+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +90,7 @@
 				E998EA3A25305DF200F159CF /* SceneDelegate.swift */,
 				E998EA3C25305DF200F159CF /* LoginViewController.swift */,
 				E9588C9425306A80006D16A1 /* HelloViewController.swift */,
+				E9EAEA932534A2F200C1AD43 /* UIViewController+Ext.swift */,
 				E9588C992530B0A5006D16A1 /* QueryEngine.swift */,
 				E998EA3E25305DF200F159CF /* Main.storyboard */,
 				E998EA4125305DF500F159CF /* Assets.xcassets */,
@@ -213,6 +216,7 @@
 			files = (
 				E9588C9A2530B0A5006D16A1 /* QueryEngine.swift in Sources */,
 				E998EA3D25305DF200F159CF /* LoginViewController.swift in Sources */,
+				E9EAEA942534A2F200C1AD43 /* UIViewController+Ext.swift in Sources */,
 				E998EA3925305DF200F159CF /* AppDelegate.swift in Sources */,
 				E998EA3B25305DF200F159CF /* SceneDelegate.swift in Sources */,
 				E9588C9525306A80006D16A1 /* HelloViewController.swift in Sources */,
