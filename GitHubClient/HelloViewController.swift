@@ -33,7 +33,7 @@ class HelloViewController: UIViewController {
         textField.font = UIFont.systemFont(ofSize: 17)
         textField.placeholder = "repository name"
         textField.borderStyle = .roundedRect
-        textField.layer.borderColor = UIColor.systemGray2.cgColor
+        textField.layer.borderColor = UIColor.systemGray.cgColor
         textField.layer.cornerRadius = 5
         return textField
     }()
@@ -42,7 +42,7 @@ class HelloViewController: UIViewController {
         textField.font = UIFont.systemFont(ofSize: 17)
         textField.placeholder = "language"
         textField.borderStyle = .roundedRect
-        textField.layer.borderColor = UIColor.systemGray2.cgColor
+        textField.layer.borderColor = UIColor.systemGray.cgColor
         textField.layer.cornerRadius = 5
         return textField
     }()
@@ -234,6 +234,9 @@ class HelloViewController: UIViewController {
             self.scrollView.contentInset = insets
             self.scrollView.scrollIndicatorInsets = insets
             self.scrollView.scrollRectToVisible(self.starsNumberTextField.frame, animated: true)
+            UIView.animate(withDuration: 0.2) {
+                self.scrollView.layoutIfNeeded()
+            }
         }
         keyboardWillChangeFrameObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: .main, using: keyboardWillChangeFrameClosure)
     }
