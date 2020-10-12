@@ -93,14 +93,12 @@ class HelloViewController: UIViewController {
         let scrollView = UIScrollView()
         return scrollView
     }()
-    private var keyboardWillChangeFrameObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
         addSubviews()
-        registerForKeyboardWillChangeFrameNotification()
         addTapGestureRecognizer()
     }
     
@@ -110,10 +108,15 @@ class HelloViewController: UIViewController {
         setupSubviews()
     }
     
-    deinit {
-        if let keyboardWillChangeFrameObserver = self.keyboardWillChangeFrameObserver {
-            NotificationCenter.default.removeObserver(keyboardWillChangeFrameObserver)
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        notificationAddObserver(#selector(keyboardWillShow(notification:)))
+    }
+    
+    @objc
+    func keyboardWillShow(notification: NSNotification) {
+        guard let size = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        shiftView(size)
     }
     
     private func addSubviews() {
@@ -218,27 +221,6 @@ class HelloViewController: UIViewController {
     
     private func turnOffAutoResisingMask(_ view: UIView) {
         view.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    // MARK: - Keyboard obscuring correction
-
-    private func registerForKeyboardWillChangeFrameNotification() {
-        let keyboardWillChangeFrameClosure = { (notification: Notification) in
-            guard let userInfo = notification.userInfo, let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
-                return
-            }
-            let convertedKeyboardFrame = self.scrollView.convert(keyboardFrame, from: nil)
-            let intersectionFrame = convertedKeyboardFrame.intersection(self.scrollView.frame)
-            let keyboardOffset = (convertedKeyboardFrame.intersects(self.starsNumberTextField.frame)) ? intersectionFrame.size.height : 0
-            let insets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardOffset, right: 0)
-            self.scrollView.contentInset = insets
-            self.scrollView.scrollIndicatorInsets = insets
-            self.scrollView.scrollRectToVisible(self.starsNumberTextField.frame, animated: true)
-            UIView.animate(withDuration: 0.2) {
-                self.scrollView.layoutIfNeeded()
-            }
-        }
-        keyboardWillChangeFrameObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: .main, using: keyboardWillChangeFrameClosure)
     }
     
     private func addTapGestureRecognizer() {
