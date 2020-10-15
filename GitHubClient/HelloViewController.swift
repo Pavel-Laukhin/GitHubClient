@@ -16,18 +16,21 @@ class HelloViewController: UIViewController {
         label.font = UIFont.systemFont(ofSize: 30, weight: .bold)
         return label
     }()
+    
     private let avatarView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .systemTeal
         return imageView
     }()
+    
     private let searchLabel: UILabel = {
         let label = UILabel()
         label.text = "Search repository"
         label.font = UIFont.systemFont(ofSize: 25, weight: .bold)
         return label
     }()
+    
     private let repositoryNameTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 17)
@@ -37,6 +40,7 @@ class HelloViewController: UIViewController {
         textField.layer.cornerRadius = 5
         return textField
     }()
+    
     private let languageTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 17)
@@ -46,12 +50,14 @@ class HelloViewController: UIViewController {
         textField.layer.cornerRadius = 5
         return textField
     }()
+    
     private let switcher: UISwitch = {
         let switcher = UISwitch()
         switcher.isOn = false
         switcher.addTarget(self, action: #selector(switchHandler), for: .valueChanged)
         return switcher
     }()
+    
     private let starsLabel: UILabel = {
         let label = UILabel()
         label.text = "Stars >"
@@ -59,6 +65,7 @@ class HelloViewController: UIViewController {
         label.isEnabled = false
         return label
     }()
+    
     private let starsNumberTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 17)
@@ -70,6 +77,7 @@ class HelloViewController: UIViewController {
         textField.isEnabled = false
         return textField
     }()
+    
     private let segmentedControl: UISegmentedControl = {
         let items = ["ascended", "descended"]
         let sc = UISegmentedControl(items: items)
@@ -77,6 +85,7 @@ class HelloViewController: UIViewController {
         sc.selectedSegmentIndex = 0
         return sc
     }()
+    
     private let startSearchButton: UIButton = {
         let button = UIButton(type: .system)
         let title = "Start search"
@@ -89,6 +98,7 @@ class HelloViewController: UIViewController {
         button.addTarget(self, action: #selector(startSearchButtonPressed), for: .touchUpInside)
         return button
     }()
+    
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         return scrollView
