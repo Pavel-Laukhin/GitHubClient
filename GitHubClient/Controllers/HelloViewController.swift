@@ -101,7 +101,6 @@ class HelloViewController: UIViewController {
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
-//        scrollView.keyboardDismissMode = .none
         return scrollView
     }()
     
@@ -112,85 +111,22 @@ class HelloViewController: UIViewController {
         addSubviews()
         addTapGestureRecognizer()
         
-        /// Keyboard observers
-//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        /// Keyboard observers
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    
-    // MARK: Keyboard actions
-//    @objc fileprivate func keyboardWillShow(notification: NSNotification) {
-//        if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-//
-//            // Меняем размер контента у скролл вью:
-//            scrollView.contentInset.bottom = keyboardFrame.height
-//
-//            // Меняем размер контента у скролл индикатора:
-//            scrollView.verticalScrollIndicatorInsets.bottom = keyboardFrame.height
-//
-//
-//            // Конвертируем фрейм клавиатуры в систему координат скролл вью:
-//            let convertedKeyboardFrame = self.scrollView.convert(keyboardFrame, from: nil)
-//
-//            // Считаем размер, на который нужно подвинуть содержимое скролл вью, в зависимости от того, пересекает ли клавиатура фрейм сегментед контрола (чтобы сегментед контролл был видимым).
-//            // Контент должен отъехать на разницу координат верхней точки клавиатуры и нижней точки сегментед контрола. Добавим еще отступ 8 поинтов, чтобы сегментед контрол не прилипал к клавиатуре.
-//            let keyboardOffset = (convertedKeyboardFrame.intersects(segmentedControl.frame)) ? segmentedControl.frame.maxY - convertedKeyboardFrame.minY + 8 : 0
-//            UIView.animate(withDuration: 0.2) {
-//                self.scrollView.contentOffset.y = keyboardOffset
-//            }
-//        }
-//    }
-//
-//    @objc fileprivate func keyboardWillHide(notification: NSNotification) {
-//        UIView.animate(withDuration: 0.2) {
-//            self.scrollView.contentInset = .zero
-//            self.scrollView.verticalScrollIndicatorInsets = .zero
-//            self.scrollView.contentOffset.y = .zero
-//        }
-//    }
-    
-    private var keyboardSize: CGRect!
-    
-    @objc private func handleKeyboardNotification(notification: Notification) {
-        guard let userInfo = notification.userInfo,
-          let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-         
-        keyboardSize = keyboardFrame.cgRectValue
-        keyboardSize = CGRect(
-          x: keyboardSize.minX,
-          y: keyboardSize.minY,
-          width: keyboardSize.width,
-          height: keyboardSize.height + 60
-        )
-         
-        if notification.name == UIResponder.keyboardWillShowNotification {
-          var contentInset = self.scrollView.contentInset
-          contentInset.bottom = keyboardSize.size.height + 20
-          scrollView.contentInset = contentInset
-        } else {
-          scrollView.contentInset = .zero
-        }
-         
-        UIView.animate(
-          withDuration: 0,
-          delay: 0,
-          options: .curveEaseOut,
-          animations: {
-            self.view.layoutIfNeeded()
-          }
-        )
-      }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -328,6 +264,36 @@ class HelloViewController: UIViewController {
         let activityVC = ActivityIndicatorViewController()
         activityVC.modalPresentationStyle = .overFullScreen
         navigationController?.present(activityVC, animated: false, completion: nil)
+    }
+    
+    // MARK: Keyboard actions
+    @objc fileprivate func handleKeyboardNotification(notification: NSNotification) {
+        guard let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        if notification.name == UIResponder.keyboardWillShowNotification {
+            
+            // Меняем размер контента у скролл вью:
+            scrollView.contentInset.bottom = keyboardFrame.height
+            
+            // Меняем размер контента у скролл индикатора:
+            scrollView.verticalScrollIndicatorInsets.bottom = keyboardFrame.height
+            
+            // Конвертируем фрейм клавиатуры в систему координат скролл вью:
+            let convertedKeyboardFrame = self.scrollView.convert(keyboardFrame, from: nil)
+            
+            // Считаем размер, на который нужно подвинуть содержимое скролл вью, в зависимости от того, пересекает ли клавиатура фрейм сегментед контрола (чтобы сегментед контролл был видимым).
+            // Контент должен отъехать на разницу координат верхней точки клавиатуры и нижней точки сегментед контрола. Добавим еще отступ 8 поинтов, чтобы сегментед контрол не прилипал к клавиатуре.
+            let keyboardOffset = (convertedKeyboardFrame.intersects(segmentedControl.frame)) ? segmentedControl.frame.maxY - convertedKeyboardFrame.minY + 8 : 0
+            UIView.animate(withDuration: 0.2) {
+//                self.scrollView.contentOffset.y = keyboardOffset
+            }
+        }
+        else {
+            UIView.animate(withDuration: 0.2) {
+                self.scrollView.contentInset = .zero
+                self.scrollView.verticalScrollIndicatorInsets = .zero
+//                self.scrollView.contentOffset.y = .zero
+            }
+        }
     }
     
 }
