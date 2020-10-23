@@ -12,6 +12,7 @@
 		E90C226A2538AD900066BA63 /* ResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90C22692538AD900066BA63 /* ResultTableViewCell.swift */; };
 		E90C226D2539C4F30066BA63 /* Repo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90C226C2539C4F30066BA63 /* Repo.swift */; };
 		E92C8034254301B20070A1EE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92C8033254301B20070A1EE /* User.swift */; };
+		E92C8038254322000070A1EE /* AppScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92C8037254322000070A1EE /* AppScrollView.swift */; };
 		E9588C9525306A80006D16A1 /* HelloViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9588C9425306A80006D16A1 /* HelloViewController.swift */; };
 		E9588C9A2530B0A5006D16A1 /* QueryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9588C992530B0A5006D16A1 /* QueryEngine.swift */; };
 		E998EA3925305DF200F159CF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E998EA3825305DF200F159CF /* AppDelegate.swift */; };
@@ -32,6 +33,7 @@
 		E90C22692538AD900066BA63 /* ResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultTableViewCell.swift; sourceTree = "<group>"; };
 		E90C226C2539C4F30066BA63 /* Repo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repo.swift; sourceTree = "<group>"; };
 		E92C8033254301B20070A1EE /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		E92C8037254322000070A1EE /* AppScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScrollView.swift; sourceTree = "<group>"; };
 		E9588C9425306A80006D16A1 /* HelloViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelloViewController.swift; sourceTree = "<group>"; };
 		E9588C992530B0A5006D16A1 /* QueryEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryEngine.swift; sourceTree = "<group>"; };
 		E998EA3525305DF200F159CF /* GitHubClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitHubClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -84,6 +86,7 @@
 				E9E8B715253CC4240002CA76 /* ActivityIndicatorViewController.swift */,
 				E90C22662538A8E00066BA63 /* ResultTableViewController.swift */,
 				E90C22692538AD900066BA63 /* ResultTableViewCell.swift */,
+				E92C8037254322000070A1EE /* AppScrollView.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -254,6 +257,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E9588C9A2530B0A5006D16A1 /* QueryEngine.swift in Sources */,
+				E92C8038254322000070A1EE /* AppScrollView.swift in Sources */,
 				E9E8B716253CC4240002CA76 /* ActivityIndicatorViewController.swift in Sources */,
 				E998EA3D25305DF200F159CF /* LoginViewController.swift in Sources */,
 				E90C226A2538AD900066BA63 /* ResultTableViewCell.swift in Sources */,
