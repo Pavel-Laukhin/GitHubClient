@@ -10,6 +10,20 @@ import Kingfisher
 
 class HelloViewController: UIViewController {
     
+    private enum TextFieldTag: Int {
+        case repository = 0
+        case language
+        
+        init(tag: Int) {
+            switch tag {
+            case 0: self = .repository
+            case 1: self = .language
+            default:
+                fatalError("Unknown tag: \(tag)")
+            }
+        }
+    }
+    
     private let helloLabel: UILabel = {
         let label = UILabel()
         label.text = "Hello"
@@ -32,22 +46,26 @@ class HelloViewController: UIViewController {
         return label
     }()
     
-    private let repositoryNameTextField: UITextField = {
+    private lazy var repositoryNameTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 17)
         textField.placeholder = "repository name"
         textField.borderStyle = .roundedRect
         textField.layer.borderColor = UIColor.systemGray.cgColor
         textField.layer.cornerRadius = 5
+        textField.delegate = self
+        textField.tag = TextFieldTag.repository.rawValue
         return textField
     }()
     
-    private let languageTextField: UITextField = {
+    private lazy var languageTextField: UITextField = {
         let textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 17)
         textField.placeholder = "language"
         textField.borderStyle = .roundedRect
         textField.layer.borderColor = UIColor.systemGray.cgColor
+        textField.delegate = self
+        textField.tag = TextFieldTag.language.rawValue
         return textField
     }()
     
@@ -99,10 +117,10 @@ class HelloViewController: UIViewController {
         return button
     }()
     
-    private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        return scrollView
-    }()
+    private lazy var scrollView: AppScrollView = {
+            let scrollView = AppScrollView()
+            return scrollView
+        }()
     
     // MARK: - Life cycle
     init(user: User) {
@@ -128,14 +146,14 @@ class HelloViewController: UIViewController {
         
         view.backgroundColor = .systemBackground
         addSubviews()
-        addTapGestureRecognizer()
         makeNavBarOpaque()
+        setupSubviews()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        /// Keyboard observers
+        // MARK: Keyboard observers
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -145,12 +163,6 @@ class HelloViewController: UIViewController {
         
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
-        setupSubviews()
     }
     
     private func addSubviews() {
@@ -173,7 +185,7 @@ class HelloViewController: UIViewController {
     }
     
     private func setupSubviews() {
-        let avatarWidth = view.bounds.width / 3
+        let avatarWidth = view.bounds.width / 2
         avatarView.layer.cornerRadius = avatarWidth / 2
         avatarView.layer.masksToBounds = true
         
@@ -192,7 +204,7 @@ class HelloViewController: UIViewController {
             avatarView.widthAnchor.constraint(equalToConstant: avatarWidth),
             avatarView.heightAnchor.constraint(equalToConstant: avatarWidth),
             
-            searchLabel.topAnchor.constraint(equalTo: avatarView.bottomAnchor, constant: 40),
+            searchLabel.topAnchor.constraint(equalTo: avatarView.bottomAnchor, constant: 24),
             searchLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             
             repositoryNameTextField.topAnchor.constraint(equalTo: searchLabel.bottomAnchor, constant: 20),
@@ -221,11 +233,6 @@ class HelloViewController: UIViewController {
             startSearchButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             startSearchButton.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
         ])
-    }
-    
-    private func addTapGestureRecognizer() {
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler))
-        view.addGestureRecognizer(tapGestureRecognizer)
     }
     
     private func makeNavBarOpaque() {
@@ -273,14 +280,6 @@ class HelloViewController: UIViewController {
         }
     }
     
-    @objc
-    private func tapGestureHandler() {
-        [repositoryNameTextField,
-         languageTextField,
-         starsNumberTextField
-        ].forEach { $0.resignFirstResponder() }
-    }
-    
     // MARK: - Keyboard actions
     @objc fileprivate func handleKeyboardNotification(notification: NSNotification) {
         guard let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
@@ -298,6 +297,12 @@ class HelloViewController: UIViewController {
             // Считаем размер, на который нужно подвинуть содержимое скролл вью, в зависимости от того, пересекает ли клавиатура фрейм сегментед контрола (чтобы сегментед контролл был видимым).
             // Контент должен отъехать на разницу координат верхней точки клавиатуры и нижней точки сегментед контрола. Добавим еще отступ 8 поинтов, чтобы сегментед контрол не прилипал к клавиатуре.
             let keyboardOffset = (convertedKeyboardFrame.intersects(segmentedControl.frame)) ? segmentedControl.frame.maxY - convertedKeyboardFrame.minY + 8 : 0
+            
+            // Eсли уже анимированно скрольнули вверх, то не нужно делать это еще раз
+            if scrollView.contentOffset.y > 0 {
+                return
+            }
+            
             UIView.animate(withDuration: 0.2) {
                 self.scrollView.contentOffset.y = keyboardOffset
             }
@@ -309,4 +314,18 @@ class HelloViewController: UIViewController {
         }
     }
     
+}
+
+// MARK: UITextFieldDelegate
+extension HelloViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        switch TextFieldTag(tag: textField.tag) {
+        case .repository:
+            languageTextField.becomeFirstResponder()
+        case .language:
+            scrollView.endEditing(true)
+        }
+        
+        return true
+    }
 }
