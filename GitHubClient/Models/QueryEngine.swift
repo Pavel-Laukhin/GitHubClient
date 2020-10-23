@@ -17,6 +17,7 @@ class QueryEngine: NSObject {
     let repoPath = "/repositories"
     let emailPath = "/user/emails"
     let searchRepoPath = "/search/repositories"
+    let userPath = "https://api.github.com/user"
 
     let defaultHeaders = [
         "Content-Type" : "application/json",
@@ -29,6 +30,11 @@ class QueryEngine: NSObject {
     let language: String
     var stars: Int?
     var order: String = "desc"
+    
+    override init() {
+        searchString = ""
+        language = ""
+    }
     
     init(searchString: String, language: String, stars: Int?) {
         self.searchString = searchString
@@ -88,15 +94,13 @@ class QueryEngine: NSObject {
             }
             
             // Сериализуем json-объект, делаем из него словарь.
-            guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-            else {
+            guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
                 print("Can't make JSONSerialization")
                 return
             }
             
             // Находим массив словарей по ключу "items"
-            guard let items = json["items"] as? [[String: Any]]
-            else {
+            guard let items = json["items"] as? [[String: Any]] else {
                 print("Can't make items")
                 return
             }
@@ -115,6 +119,60 @@ class QueryEngine: NSObject {
             handler(repos)
         }
         
+        dataTask.resume()
+        return
+    }
+    
+    private func loginRequest(login: String, password: String) -> URLRequest? {
+       
+        let loginString = "\(login):\(password)"
+        
+        guard let loginData = loginString.data(using: .utf8),
+              let url = URL(string: userPath) else { return nil }
+        
+        let base64LoginString = loginData.base64EncodedString()
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Basic \(base64LoginString)", forHTTPHeaderField: auth)
+        
+        return request
+    }
+    
+    func performLoginRequest(login: String, password: String, handler: @escaping (User) -> Void) {
+        
+        guard let urlRequest = loginRequest(login: login, password: password) else {
+            print(type(of: self), #function, "Can't make urlRequest")
+            return
+        }
+
+        // Setup Data Task
+        let dataTask = sharedSession.dataTask(with: urlRequest) { (data, response, error) in
+
+            if let error = error {
+                print(type(of: self), #function, error.localizedDescription)
+            }
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print(type(of: self), #function, "http status code: \(httpResponse.statusCode)")
+            }
+
+            guard let data = data else {
+                print(type(of: self), #function, "No data received")
+                return
+            }
+            
+            let decoder = JSONDecoder()
+            
+            guard let user = try? decoder.decode(User.self, from: data) else {
+                print(type(of: self), #function, "Can't make user")
+                return
+            }
+            
+            print(type(of: self), #function, user)
+            handler(user)
+        }
+
         dataTask.resume()
         return
     }

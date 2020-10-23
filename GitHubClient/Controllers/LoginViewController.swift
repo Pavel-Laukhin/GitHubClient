@@ -12,6 +12,10 @@ class LoginViewController: UIViewController {
 
     @IBOutlet weak var logoView: UIImageView!
     @IBOutlet weak var signInButton: UIButton!
+    @IBOutlet weak var loginTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    
+    private let queryEngine = QueryEngine()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,8 +36,27 @@ class LoginViewController: UIViewController {
     }
 
     @IBAction func signInButtonPressed(_ sender: UIButton) {
-        let vc = HelloViewController()
-        navigationController?.pushViewController(vc, animated: true)
+        ActivityIndicatorViewController.startAnimating(in: self)
+        guard let login = loginTextField.text,
+              let password = passwordTextField.text else {
+            let ac = UIAlertController(title: "Fill the gaps", message: "Login or password is empty", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+            ac.addAction(ok)
+            present(ac, animated: true, completion: nil)
+            print(type(of: self), #function, "Login or password is empty!")
+            return
+        }
+        queryEngine.performLoginRequest(login: login, password: password) { [weak self] user in
+            guard let self = self else {
+                print(#function, "Can't return user")
+                return
+            }
+            DispatchQueue.main.async {
+                let vc = HelloViewController(user: user)
+                self.navigationController?.pushViewController(vc, animated: true)
+                ActivityIndicatorViewController.stopAnimating(in: self)
+            }
+        }
     }
     
     // Метод, который убирает клавиатуру после того, как закончилось редактирование
