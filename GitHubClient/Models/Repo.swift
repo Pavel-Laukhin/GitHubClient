@@ -18,7 +18,7 @@ struct Repo {
     init?(json: Dictionary<String, Any>) {
         guard let title = json["name"] as? String,
               let details = json["description"] as? String,
-              let url = json["url"] as? String,
+              let url = json["html_url"] as? String,
               let owner = json["owner"] as? [String: Any],
               let user = owner["login"] as? String,
               let avatarURL = owner["avatar_url"] as? String

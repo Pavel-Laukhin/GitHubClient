@@ -14,6 +14,7 @@ class HelloViewController: UIViewController {
         let label = UILabel()
         label.text = "Hello"
         label.font = UIFont.systemFont(ofSize: 30, weight: .bold)
+        label.numberOfLines = 2
         return label
     }()
     
@@ -47,7 +48,6 @@ class HelloViewController: UIViewController {
         textField.placeholder = "language"
         textField.borderStyle = .roundedRect
         textField.layer.borderColor = UIColor.systemGray.cgColor
-        textField.layer.cornerRadius = 5
         return textField
     }()
     
@@ -104,13 +104,32 @@ class HelloViewController: UIViewController {
         return scrollView
     }()
     
+    // MARK: - Life cycle
+    init(user: User) {
+        if let url = URL(string: user.avatarURL) {
+            avatarView.kf.setImage(with: url)
+        }
+        
+        if let name = user.name {
+            helloLabel.text = "Hello, \(name)"
+        } else {
+            helloLabel.text = "Hello, \(user.userName)!"
+        }
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
         addSubviews()
         addTapGestureRecognizer()
-        
+        makeNavBarOpaque()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -136,7 +155,7 @@ class HelloViewController: UIViewController {
     
     private func addSubviews() {
         view.addSubview(scrollView)
-        turnOffAutoResisingMask(scrollView)
+        scrollView.toAutoLayout()
         [helloLabel,
          avatarView,
          searchLabel,
@@ -149,13 +168,14 @@ class HelloViewController: UIViewController {
          startSearchButton
         ].forEach {
             scrollView.addSubview($0)
-            turnOffAutoResisingMask($0)
+            $0.toAutoLayout()
         }
     }
     
     private func setupSubviews() {
         let avatarWidth = view.bounds.width / 3
         avatarView.layer.cornerRadius = avatarWidth / 2
+        avatarView.layer.masksToBounds = true
         
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -164,7 +184,7 @@ class HelloViewController: UIViewController {
             scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor),
             
-            helloLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 40),
+            helloLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 20),
             helloLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             
             avatarView.topAnchor.constraint(equalTo: helloLabel.bottomAnchor, constant: 20),
@@ -197,12 +217,22 @@ class HelloViewController: UIViewController {
             segmentedControl.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             segmentedControl.widthAnchor.constraint(equalToConstant: view.bounds.width - 2 * 40),
             
-            startSearchButton.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 40),
+            startSearchButton.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 20),
             startSearchButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             startSearchButton.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
         ])
     }
     
+    private func addTapGestureRecognizer() {
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler))
+        view.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    private func makeNavBarOpaque() {
+        navigationController?.navigationBar.isTranslucent = false
+    }
+    
+    // MARK: - Actions
     @objc private func switchHandler() {
         switch switcher.isOn {
         case true:
@@ -215,7 +245,7 @@ class HelloViewController: UIViewController {
     }
     
     @objc private func startSearchButtonPressed() {
-        startAnimating()
+        ActivityIndicatorViewController.startAnimating(in: self)
         
         guard let searchString = repositoryNameTextField.text,
               let language = languageTextField.text
@@ -236,20 +266,11 @@ class HelloViewController: UIViewController {
         queryEngine.performSearchRepoRequest { [weak self] repos in
             guard let self = self else { return }
             DispatchQueue.main.async {
-                self.navigationController?.dismiss(animated: false, completion: nil)
+                ActivityIndicatorViewController.stopAnimating(in: self)
                 let resultTable = ResultTableViewController(repoArray: repos)
                 self.navigationController?.pushViewController(resultTable, animated: true)
             }
         }
-    }
-    
-    private func turnOffAutoResisingMask(_ view: UIView) {
-        view.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    private func addTapGestureRecognizer() {
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler))
-        view.addGestureRecognizer(tapGestureRecognizer)
     }
     
     @objc
@@ -260,13 +281,7 @@ class HelloViewController: UIViewController {
         ].forEach { $0.resignFirstResponder() }
     }
     
-    func startAnimating() {
-        let activityVC = ActivityIndicatorViewController()
-        activityVC.modalPresentationStyle = .overFullScreen
-        navigationController?.present(activityVC, animated: false, completion: nil)
-    }
-    
-    // MARK: Keyboard actions
+    // MARK: - Keyboard actions
     @objc fileprivate func handleKeyboardNotification(notification: NSNotification) {
         guard let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         if notification.name == UIResponder.keyboardWillShowNotification {
@@ -284,15 +299,13 @@ class HelloViewController: UIViewController {
             // Контент должен отъехать на разницу координат верхней точки клавиатуры и нижней точки сегментед контрола. Добавим еще отступ 8 поинтов, чтобы сегментед контрол не прилипал к клавиатуре.
             let keyboardOffset = (convertedKeyboardFrame.intersects(segmentedControl.frame)) ? segmentedControl.frame.maxY - convertedKeyboardFrame.minY + 8 : 0
             UIView.animate(withDuration: 0.2) {
-//                self.scrollView.contentOffset.y = keyboardOffset
+                self.scrollView.contentOffset.y = keyboardOffset
             }
         }
         else {
-            UIView.animate(withDuration: 0.2) {
-                self.scrollView.contentInset = .zero
-                self.scrollView.verticalScrollIndicatorInsets = .zero
-//                self.scrollView.contentOffset.y = .zero
-            }
+            scrollView.contentInset = .zero
+            scrollView.verticalScrollIndicatorInsets = .zero
+            scrollView.contentOffset.y = .zero
         }
     }
     

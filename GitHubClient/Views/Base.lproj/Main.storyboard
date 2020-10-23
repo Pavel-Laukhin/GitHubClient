@@ -2,7 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="vog-0E-yCG">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -48,7 +48,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="kv8-BJ-z2h">
-                                <rect key="frame" x="97" y="422" width="220" height="34"/>
+                                <rect key="frame" x="97" y="419" width="220" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="220" id="UPg-Mo-oOz"/>
                                 </constraints>
@@ -56,7 +56,7 @@
                                 <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O3J-zE-kiQ">
-                                <rect key="frame" x="175" y="490" width="64" height="33"/>
+                                <rect key="frame" x="175" y="487" width="64" height="33"/>
                                 <color key="backgroundColor" systemColor="systemGreenColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <inset key="contentEdgeInsets" minX="6" minY="6" maxX="6" maxY="6"/>
@@ -72,7 +72,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="klE-8Y-PXU" firstAttribute="top" secondItem="Fmw-bG-A9c" secondAttribute="bottom" constant="50" id="26y-dw-8zP"/>
-                            <constraint firstItem="kv8-BJ-z2h" firstAttribute="top" secondItem="klE-8Y-PXU" secondAttribute="bottom" constant="15" id="Fbt-mv-lZv"/>
+                            <constraint firstItem="kv8-BJ-z2h" firstAttribute="top" secondItem="klE-8Y-PXU" secondAttribute="bottom" constant="12" id="Fbt-mv-lZv"/>
                             <constraint firstItem="Fmw-bG-A9c" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="GDS-ND-jWi"/>
                             <constraint firstItem="O3J-zE-kiQ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="HKB-8v-XvJ"/>
                             <constraint firstItem="klE-8Y-PXU" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="IY5-rH-q2t"/>
@@ -83,7 +83,9 @@
                     </view>
                     <navigationItem key="navigationItem" id="FRr-60-fIS"/>
                     <connections>
+                        <outlet property="loginTextField" destination="klE-8Y-PXU" id="1D3-8h-Nmf"/>
                         <outlet property="logoView" destination="Fmw-bG-A9c" id="73r-jS-80z"/>
+                        <outlet property="passwordTextField" destination="kv8-BJ-z2h" id="n6T-lc-WFC"/>
                         <outlet property="signInButton" destination="O3J-zE-kiQ" id="w9n-If-3W0"/>
                     </connections>
                 </viewController>
