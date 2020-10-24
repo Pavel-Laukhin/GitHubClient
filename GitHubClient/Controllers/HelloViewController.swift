@@ -118,9 +118,9 @@ class HelloViewController: UIViewController {
     }()
     
     private lazy var scrollView: AppScrollView = {
-            let scrollView = AppScrollView()
-            return scrollView
-        }()
+        let scrollView = AppScrollView()
+        return scrollView
+    }()
     
     // MARK: - Life cycle
     init(user: User) {
@@ -128,11 +128,7 @@ class HelloViewController: UIViewController {
             avatarView.kf.setImage(with: url)
         }
         
-        if let name = user.name {
-            helloLabel.text = "Hello, \(name)"
-        } else {
-            helloLabel.text = "Hello, \(user.userName)!"
-        }
+        helloLabel.text = "Hello, \(user.name ?? user.userName)" + " !"
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -241,14 +237,8 @@ class HelloViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func switchHandler() {
-        switch switcher.isOn {
-        case true:
-            starsLabel.isEnabled = true
-            starsNumberTextField.isEnabled = true
-        case false:
-            starsLabel.isEnabled = false
-            starsNumberTextField.isEnabled = false
-        }
+        switcher.isOn ? (starsLabel.isEnabled = true) : (starsLabel.isEnabled = false)
+        switcher.isOn ? (starsNumberTextField.isEnabled = true) : (starsNumberTextField.isEnabled = false)
     }
     
     @objc private func startSearchButtonPressed() {
@@ -261,14 +251,7 @@ class HelloViewController: UIViewController {
         }
         let stars = switcher.isOn ? Int(starsNumberTextField.text ?? "0") : nil
         let queryEngine = QueryEngine(searchString: searchString, language: language, stars: stars)
-        switch segmentedControl.selectedSegmentIndex {
-        case 0:
-            queryEngine.order = "asc"
-        case 1:
-            queryEngine.order = "desc"
-        default:
-            fatalError("Index of segmented control is out of range!")
-        }
+        segmentedControl.selectedSegmentIndex == 0 ? (queryEngine.order = "asc") : (queryEngine.order = "desc")
         
         queryEngine.performSearchRepoRequest { [weak self] repos in
             guard let self = self else { return }
