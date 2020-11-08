@@ -9,7 +9,7 @@ import UIKit
 
 class ResultTableViewController: UIViewController {
     
-    private var repoArray: [Repo]?
+    private var repoArray: [Repos.Repo]?
     
     private lazy var reposNumberLabel: UILabel = {
         let label = UILabel()
@@ -28,7 +28,7 @@ class ResultTableViewController: UIViewController {
         return tableView
     }()
     
-    init(repoArray: [Repo]) {
+    init(repoArray: [Repos.Repo]) {
         super.init(nibName: nil, bundle: nil)
         
         self.repoArray = repoArray

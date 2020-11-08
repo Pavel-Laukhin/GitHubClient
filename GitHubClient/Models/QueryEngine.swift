@@ -63,14 +63,12 @@ class QueryEngine: NSObject {
         return request
     }
     
-    func performSearchRepoRequest(handler: @escaping ([Repo]) -> Void) {
+    func performSearchRepoRequest(handler: @escaping ([Repos.Repo]) -> Void) {
         guard let urlRequest = searchRepositoriesRequest() else {
             print("url request error")
             return
         }
         
-        var repos: [Repo] = []
-                
         let dataTask = sharedSession.dataTask(with: urlRequest) { (data, response, error) in
             
             if let error = error {
@@ -87,32 +85,13 @@ class QueryEngine: NSObject {
                 return
             }
             
-            // Сериализуем json-объект, делаем из него словарь.
-            guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-            else {
-                print("Can't make JSONSerialization")
-                return
-            }
+            let decoder = JSONDecoder()
             
-            // Находим массив словарей по ключу "items"
-            guard let items = json["items"] as? [[String: Any]]
-            else {
-                print("Can't make items")
-                return
+            // Создаем массив экземпляров Repo
+            if let repos = try? decoder.decode(Repos.self, from: data)   {
+                // Работаем с полученным массивом
+                handler(repos.items)
             }
-            
-            // Создаем экземпляры Repo и добавляем их в массив repos
-            for item in items {
-                if let repo = Repo(json: item) {
-                    print(type(of: self), #function, "I made one repo")
-                    repos.append(repo)
-                } else {
-                    print(type(of: self), #function, "Can't make repo")
-                }
-            }
-            
-            // Работаем с полученным массивом
-            handler(repos)
         }
         
         dataTask.resume()

@@ -40,13 +40,15 @@ class ResultTableViewCell: UITableViewCell {
         return imageView
     }()
     
-    var repo: Repo? {
+    var repo: Repos.Repo? {
         didSet {
             guard let repo = repo else { return }
             titleLabel.text = repo.title
             detailsLabel.text = repo.details
-            userLabel.text = repo.user
-            let url = URL(string: repo.avatarURL)
+//            userLabel.text = repo.user
+//            let url = URL(string: repo.avatarURL)
+            userLabel.text = repo.owner.user
+            let url = URL(string: repo.owner.avatarURL)
             avatarView.kf.setImage(with: url)
         }
     }
