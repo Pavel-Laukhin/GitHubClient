@@ -23,8 +23,8 @@ class ResultTableViewController: UIViewController {
         let tableView = UITableView(frame: .zero)
         tableView.register(ResultTableViewCell.self, forCellReuseIdentifier: String(describing: ResultTableViewCell.self))
         tableView.dataSource = self
-        tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.allowsSelection = false
         return tableView
     }()
     
@@ -91,14 +91,4 @@ extension ResultTableViewController: UITableViewDataSource {
         return UITableViewCell()
     }
 
-}
-
-//MARK: - Delegate
-
-extension ResultTableViewController: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
 }

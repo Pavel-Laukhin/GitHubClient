@@ -276,22 +276,11 @@ class HelloViewController: UIViewController {
             
             // Меняем размер контента у скролл индикатора:
             scrollView.verticalScrollIndicatorInsets.bottom = keyboardFrame.height
-            
-            // Конвертируем фрейм клавиатуры в систему координат скролл вью:
-            let convertedKeyboardFrame = self.scrollView.convert(keyboardFrame, from: nil)
-            
-            // Считаем размер, на который нужно подвинуть содержимое скролл вью, в зависимости от того, пересекает ли клавиатура фрейм сегментед контрола (чтобы сегментед контролл был видимым).
-            // Контент должен отъехать на разницу координат верхней точки клавиатуры и нижней точки сегментед контрола. Добавим еще отступ 8 поинтов, чтобы сегментед контрол не прилипал к клавиатуре.
-            let keyboardOffset = (convertedKeyboardFrame.intersects(segmentedControl.frame)) ? segmentedControl.frame.maxY - convertedKeyboardFrame.minY + 8 : 0
-            UIView.animate(withDuration: 0.2) {
-//                self.scrollView.contentOffset.y = keyboardOffset
-            }
         }
         else {
             UIView.animate(withDuration: 0.2) {
                 self.scrollView.contentInset = .zero
                 self.scrollView.verticalScrollIndicatorInsets = .zero
-//                self.scrollView.contentOffset.y = .zero
             }
         }
     }

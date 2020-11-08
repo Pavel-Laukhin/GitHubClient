@@ -101,12 +101,3 @@ class ResultTableViewCell: UITableViewCell {
     }
     
 }
-
-
-extension UIView {
-    
-    func toAutoLayout() {
-        translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-}
