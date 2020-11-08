@@ -26,7 +26,13 @@ class ActivityIndicatorViewController: UIViewController {
     class func startAnimating(in viewController: UIViewController) {
         let activityVC = ActivityIndicatorViewController()
         activityVC.modalPresentationStyle = .overFullScreen
-        viewController.navigationController?.tabBarController?.present(activityVC, animated: false, completion: nil)
+        viewController.navigationController?.present(activityVC, animated: false, completion: nil)
+    }
+    
+    class func stopAnimating(in viewController: UIViewController) {
+        if viewController.navigationController?.presentedViewController is ActivityIndicatorViewController {
+            viewController.navigationController?.dismiss(animated: false, completion: nil)
+        }
     }
     
 }
