@@ -25,7 +25,6 @@ class ResultTableViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.allowsSelection = false
         return tableView
     }()
     
