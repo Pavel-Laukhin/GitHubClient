@@ -63,13 +63,14 @@ class QueryEngine: NSObject {
         return request
     }
     
-    func performSearchRepoRequest() {
+    func performSearchRepoRequest(handler: @escaping ([Repos.Repo]) -> Void) {
         guard let urlRequest = searchRepositoriesRequest() else {
             print("url request error")
             return
         }
         
         let dataTask = sharedSession.dataTask(with: urlRequest) { (data, response, error) in
+            
             if let error = error {
                 print(error.localizedDescription)
                 return
@@ -84,13 +85,17 @@ class QueryEngine: NSObject {
                 return
             }
             
-            guard let text = String(data: data, encoding: .utf8) else {
-                print("data encoding failed")
-                return
+            let decoder = JSONDecoder()
+            
+            // Создаем массив экземпляров Repo
+            if let repos = try? decoder.decode(Repos.self, from: data)   {
+                // Работаем с полученным массивом
+                handler(repos.items)
             }
-            print("received data: \(text)")
         }
+        
         dataTask.resume()
+        return
     }
     
 }
