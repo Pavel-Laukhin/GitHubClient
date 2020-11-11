@@ -110,23 +110,28 @@ class HelloViewController: UIViewController {
         view.backgroundColor = .systemBackground
         addSubviews()
         addTapGestureRecognizer()
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        /// Keyboard observers
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
         setupSubviews()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        notificationAddObserver(#selector(keyboardWillShow(notification:)))
-    }
-    
-    @objc
-    func keyboardWillShow(notification: NSNotification) {
-        guard let size = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
-        shiftView(size)
     }
     
     private func addSubviews() {
@@ -153,28 +158,29 @@ class HelloViewController: UIViewController {
         avatarView.layer.cornerRadius = avatarWidth / 2
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor),
             
-            helloLabel.topAnchor.constraint(equalTo: scrollView.safeAreaLayoutGuide.topAnchor, constant: 40),
-            helloLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            helloLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 40),
+            helloLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             
             avatarView.topAnchor.constraint(equalTo: helloLabel.bottomAnchor, constant: 20),
-            avatarView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            avatarView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             avatarView.widthAnchor.constraint(equalToConstant: avatarWidth),
             avatarView.heightAnchor.constraint(equalToConstant: avatarWidth),
             
             searchLabel.topAnchor.constraint(equalTo: avatarView.bottomAnchor, constant: 40),
-            searchLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            searchLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             
             repositoryNameTextField.topAnchor.constraint(equalTo: searchLabel.bottomAnchor, constant: 20),
-            repositoryNameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            repositoryNameTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             repositoryNameTextField.widthAnchor.constraint(equalToConstant: view.bounds.width - 2 * 40),
-
+            
             languageTextField.topAnchor.constraint(equalTo: repositoryNameTextField.bottomAnchor, constant: 12),
-            languageTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            languageTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             languageTextField.widthAnchor.constraint(equalToConstant: view.bounds.width - 2 * 40),
             
             switcher.leadingAnchor.constraint(equalTo: languageTextField.leadingAnchor),
@@ -182,21 +188,19 @@ class HelloViewController: UIViewController {
             
             starsLabel.leadingAnchor.constraint(equalTo: switcher.trailingAnchor, constant: 15),
             starsLabel.centerYAnchor.constraint(equalTo: starsNumberTextField.centerYAnchor),
-
+            
             
             starsNumberTextField.topAnchor.constraint(equalTo: languageTextField.bottomAnchor, constant: 15),
             starsNumberTextField.leadingAnchor.constraint(equalTo: starsLabel.trailingAnchor, constant: 15),
             
             segmentedControl.topAnchor.constraint(equalTo: starsNumberTextField.bottomAnchor, constant: 20),
-            segmentedControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            segmentedControl.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             segmentedControl.widthAnchor.constraint(equalToConstant: view.bounds.width - 2 * 40),
             
             startSearchButton.topAnchor.constraint(equalTo: segmentedControl.bottomAnchor, constant: 40),
-            startSearchButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            startSearchButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            startSearchButton.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
         ])
-        
-        let contentSize = CGSize(width: view.bounds.width, height: view.bounds.height - view.safeAreaInsets.top)
-        scrollView.contentSize = contentSize
     }
     
     @objc private func switchHandler() {
@@ -211,6 +215,8 @@ class HelloViewController: UIViewController {
     }
     
     @objc private func startSearchButtonPressed() {
+        startAnimating()
+        
         guard let searchString = repositoryNameTextField.text,
               let language = languageTextField.text
         else {
@@ -226,7 +232,15 @@ class HelloViewController: UIViewController {
         default:
             fatalError("Index of segmented control is out of range!")
         }
-        queryEngine.performSearchRepoRequest()
+        
+        queryEngine.performSearchRepoRequest { [weak self] repos in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.navigationController?.dismiss(animated: false, completion: nil)
+                let resultTable = ResultTableViewController(repoArray: repos)
+                self.navigationController?.pushViewController(resultTable, animated: true)
+            }
+        }
     }
     
     private func turnOffAutoResisingMask(_ view: UIView) {
@@ -234,16 +248,41 @@ class HelloViewController: UIViewController {
     }
     
     private func addTapGestureRecognizer() {
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler(_:)))
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler))
         view.addGestureRecognizer(tapGestureRecognizer)
     }
     
     @objc
-    private func tapGestureHandler(_ sender: UITapGestureRecognizer) {
+    private func tapGestureHandler() {
         [repositoryNameTextField,
          languageTextField,
          starsNumberTextField
         ].forEach { $0.resignFirstResponder() }
+    }
+    
+    func startAnimating() {
+        let activityVC = ActivityIndicatorViewController()
+        activityVC.modalPresentationStyle = .overFullScreen
+        navigationController?.present(activityVC, animated: false, completion: nil)
+    }
+    
+    // MARK: Keyboard actions
+    @objc fileprivate func handleKeyboardNotification(notification: NSNotification) {
+        guard let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        if notification.name == UIResponder.keyboardWillShowNotification {
+            
+            // Меняем размер контента у скролл вью:
+            scrollView.contentInset.bottom = keyboardFrame.height
+            
+            // Меняем размер контента у скролл индикатора:
+            scrollView.verticalScrollIndicatorInsets.bottom = keyboardFrame.height
+        }
+        else {
+            UIView.animate(withDuration: 0.2) {
+                self.scrollView.contentInset = .zero
+                self.scrollView.verticalScrollIndicatorInsets = .zero
+            }
+        }
     }
     
 }
