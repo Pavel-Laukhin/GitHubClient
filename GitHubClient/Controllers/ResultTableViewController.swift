@@ -23,6 +23,7 @@ class ResultTableViewController: UIViewController {
         let tableView = UITableView(frame: .zero)
         tableView.register(ResultTableViewCell.self, forCellReuseIdentifier: String(describing: ResultTableViewCell.self))
         tableView.dataSource = self
+        tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.allowsSelection = false
         return tableView
@@ -41,7 +42,7 @@ class ResultTableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = #colorLiteral(red: 0.5949709415, green: 0.9076359868, blue: 0.4050972462, alpha: 1)
         addSubviews()
     }
     
@@ -58,7 +59,7 @@ class ResultTableViewController: UIViewController {
     
     private func setupLayout() {
         NSLayoutConstraint.activate([
-            reposNumberLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
+            reposNumberLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             reposNumberLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 5),
             reposNumberLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             
@@ -91,4 +92,21 @@ extension ResultTableViewController: UITableViewDataSource {
         return UITableViewCell()
     }
 
+}
+
+//MARK: - Delegate
+
+extension ResultTableViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard let url = repoArray?[indexPath.row].url else {
+            print(type(of: self), #function, "Can't make url")
+            return
+        }
+        let webViewController = WKWebViewController(url: url)
+        navigationController?.pushViewController(webViewController, animated: true)
+    }
+    
 }
