@@ -13,6 +13,7 @@
 		E90C226D2539C4F30066BA63 /* Repos.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90C226C2539C4F30066BA63 /* Repos.swift */; };
 		E92C8034254301B20070A1EE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92C8033254301B20070A1EE /* User.swift */; };
 		E92C8038254322000070A1EE /* AppScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92C8037254322000070A1EE /* AppScrollView.swift */; };
+		E92FD18F255D24F9000546A8 /* KeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92FD18E255D24F9000546A8 /* KeyChain.swift */; };
 		E9588C9525306A80006D16A1 /* HelloViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9588C9425306A80006D16A1 /* HelloViewController.swift */; };
 		E9588C9A2530B0A5006D16A1 /* QueryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9588C992530B0A5006D16A1 /* QueryEngine.swift */; };
 		E998EA3925305DF200F159CF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E998EA3825305DF200F159CF /* AppDelegate.swift */; };
@@ -35,6 +36,7 @@
 		E90C226C2539C4F30066BA63 /* Repos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repos.swift; sourceTree = "<group>"; };
 		E92C8033254301B20070A1EE /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		E92C8037254322000070A1EE /* AppScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScrollView.swift; sourceTree = "<group>"; };
+		E92FD18E255D24F9000546A8 /* KeyChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChain.swift; sourceTree = "<group>"; };
 		E9588C9425306A80006D16A1 /* HelloViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelloViewController.swift; sourceTree = "<group>"; };
 		E9588C992530B0A5006D16A1 /* QueryEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryEngine.swift; sourceTree = "<group>"; };
 		E998EA3525305DF200F159CF /* GitHubClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitHubClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,6 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				E9588C992530B0A5006D16A1 /* QueryEngine.swift */,
+				E92FD18E255D24F9000546A8 /* KeyChain.swift */,
 				E90C226C2539C4F30066BA63 /* Repos.swift */,
 				E92C8033254301B20070A1EE /* User.swift */,
 			);
@@ -270,6 +273,7 @@
 				E998EA3925305DF200F159CF /* AppDelegate.swift in Sources */,
 				E9D048F6255856D200EDE771 /* UIView Extention.swift in Sources */,
 				E998EA3B25305DF200F159CF /* SceneDelegate.swift in Sources */,
+				E92FD18F255D24F9000546A8 /* KeyChain.swift in Sources */,
 				E9588C9525306A80006D16A1 /* HelloViewController.swift in Sources */,
 				E92C8034254301B20070A1EE /* User.swift in Sources */,
 			);

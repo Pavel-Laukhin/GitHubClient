@@ -155,7 +155,6 @@ class QueryEngine: NSObject {
         }
 
         dataTask.resume()
-        return
     }
     
 }
