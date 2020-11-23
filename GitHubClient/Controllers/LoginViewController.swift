@@ -52,43 +52,55 @@ class LoginViewController: UIViewController {
     @IBAction func signInButtonPressed(_ sender: UIButton) {
         let keychain: KeyChainProtocol = Keychain()
         
-        if let currentUser = User.currentUser,
-           let token = keychain.readPassword(account: currentUser.userName) {
-            print("The token was successfully retrieved! :]")
-            biometricAuthentication() {
-                HelloViewController.showSelf(using: token)
-            }
-        } else {
+        guard let currentUser = User.currentUser,
+              let token = keychain.readPassword(account: currentUser.userName) else {
             print("The token wasn't successfully retrieved! :[")
             ActivityIndicatorViewController.startAnimating(in: self)
             queryEngine.openPageToLogin()
+            return
+        }
+        print("The token was successfully retrieved! :]")
+        if biometricAuthenticationPassed() {
+            HelloViewController.showSelf(using: token)
+        } else {
+            print(#function, "Can't make TouchID/FaceID authentication")
         }
     }
     
-    private func biometricAuthentication(handler: @escaping () -> Void) {
+    private func biometricAuthenticationPassed() -> Bool {
         let authenticationContext = LAContext()
         var authError: NSError?
         
         // Check for the availability of the aithentication with biometrics.
-        if authenticationContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &authError) {
-            
-            // Authentication attempt.
-            authenticationContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Reason") { sucsess, evaluateError in
-                if sucsess {
-                    handler()
-                } else {
-                    if let error = evaluateError {
-                        print(error.localizedDescription)
-                    }
-                }
-            }
-        } else {
+        guard authenticationContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &authError) else {
             
             // Verification for using biometric data for authentication failed.
             if let error = authError {
                 print(error.localizedDescription)
             }
+            return false
         }
+        
+        var isPassedAuthentication: Bool?
+        let group = DispatchGroup()
+        
+        group.enter()
+        
+        // Authentication attempt.
+        authenticationContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Use TouchID for authentication!") { sucsess, evaluateError in
+            if sucsess {
+                isPassedAuthentication = true
+                group.leave()
+            } else {
+                if let error = evaluateError {
+                    print(error.localizedDescription)
+                }
+                isPassedAuthentication = false
+                group.leave()
+            }
+        }
+        group.wait()
+        return isPassedAuthentication ?? false
     }
     
     // MARK: - Keyboard actions
