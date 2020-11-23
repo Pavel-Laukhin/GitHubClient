@@ -272,11 +272,11 @@ class HelloViewController: UIViewController {
             fatalError("Index of segmented control is out of range!")
         }
         
-        queryEngine.performSearchRepoRequest { [weak self] repos in
+        queryEngine.performSearchRepoRequest { [weak self] (repos, totalCountOfRepos) in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 ActivityIndicatorViewController.stopAnimating(in: self)
-                let resultTable = ResultTableViewController(repoArray: repos)
+                let resultTable = ResultTableViewController(repoArray: repos, totalCountOfRepos: totalCountOfRepos)
                 self.navigationController?.pushViewController(resultTable, animated: true)
             }
         }

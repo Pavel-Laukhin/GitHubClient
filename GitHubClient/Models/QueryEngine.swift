@@ -79,7 +79,7 @@ class QueryEngine: NSObject {
         return request
     }
     
-    func performSearchRepoRequest(handler: @escaping ([Repos.Repo]) -> Void) {
+    func performSearchRepoRequest(handler: @escaping ([Repos.Repo], Int) -> Void) {
         guard let urlRequest = searchRepositoriesRequest() else {
             print("url request error")
             return
@@ -107,7 +107,7 @@ class QueryEngine: NSObject {
             if let repos = try? decoder.decode(Repos.self, from: data)   {
                 
                 // Работаем с полученным массивом
-                handler(repos.items)
+                handler(repos.items, repos.totalCount)
             }
         }
         
@@ -166,10 +166,8 @@ class QueryEngine: NSObject {
     func performTokenRequest(temporaryCode: String, completion: @escaping (String) -> Void ) {
         
         guard let request = tokenRequest(temporaryCode: temporaryCode) else { return }
-        
-        let urlSession = URLSession.init(configuration: .default)
-        
-        let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+                
+        let dataTask = sharedSession.dataTask(with: request) { (data, response, error) in
             if let error = error {
                 print(error.localizedDescription)
                 return

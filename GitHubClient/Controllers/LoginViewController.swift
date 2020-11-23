@@ -7,6 +7,7 @@
 
 import UIKit
 import Kingfisher
+import LocalAuthentication
 
 class LoginViewController: UIViewController {
 
@@ -49,16 +50,44 @@ class LoginViewController: UIViewController {
     }
 
     @IBAction func signInButtonPressed(_ sender: UIButton) {
-        let keychain = Keychain()
+        let keychain: KeyChainProtocol = Keychain()
         
         if let currentUser = User.currentUser,
            let token = keychain.readPassword(account: currentUser.userName) {
             print("The token was successfully retrieved! :]")
-            HelloViewController.showSelf(using: token)
+            biometricAuthentication() {
+                HelloViewController.showSelf(using: token)
+            }
         } else {
             print("The token wasn't successfully retrieved! :[")
             ActivityIndicatorViewController.startAnimating(in: self)
             queryEngine.openPageToLogin()
+        }
+    }
+    
+    private func biometricAuthentication(handler: @escaping () -> Void) {
+        let authenticationContext = LAContext()
+        var authError: NSError?
+        
+        // Check for the availability of the aithentication with biometrics.
+        if authenticationContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &authError) {
+            
+            // Authentication attempt.
+            authenticationContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Reason") { sucsess, evaluateError in
+                if sucsess {
+                    handler()
+                } else {
+                    if let error = evaluateError {
+                        print(error.localizedDescription)
+                    }
+                }
+            }
+        } else {
+            
+            // Verification for using biometric data for authentication failed.
+            if let error = authError {
+                print(error.localizedDescription)
+            }
         }
     }
     

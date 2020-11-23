@@ -10,13 +10,13 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    private let keychain = Keychain()
+    private let keychain: KeyChainProtocol = Keychain()
     private let queryEngine = QueryEngine()
     
-    // Получаем временный код с гитхаба
+    // Получаем временный код с гитхаба, затем меняем его на токен и с помощью него переходим к следующему контроллеру.
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         
-        // Getting a temporary code.
+        // Getting a temporary code from received URL.
         guard let url = URLContexts.first?.url,
               let receivedParameters = url.params(),
               let code = receivedParameters["code"] as? String else { return }
