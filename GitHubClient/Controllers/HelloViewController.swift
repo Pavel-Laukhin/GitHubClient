@@ -144,6 +144,7 @@ class HelloViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        ActivityIndicatorViewController.stopAnimating(in: self)
         view.backgroundColor = .systemBackground
         addSubviews()
         makeNavBarOpaque()
@@ -260,23 +261,59 @@ class HelloViewController: UIViewController {
             return
         }
         let stars = switcher.isOn ? Int(starsNumberTextField.text ?? "0") : nil
-        let queryEngine = QueryEngine(searchString: searchString, language: language, stars: stars)
+        let queryEngine: QueryEngine
+
         switch segmentedControl.selectedSegmentIndex {
         case 0:
-            queryEngine.order = "asc"
+            queryEngine = QueryEngine(searchString: searchString, language: language, order: "asc", stars: stars)
         case 1:
-            queryEngine.order = "desc"
+            queryEngine = QueryEngine(searchString: searchString, language: language, order: "desc", stars: stars)
         default:
             fatalError("Index of segmented control is out of range!")
         }
         
-        queryEngine.performSearchRepoRequest { [weak self] repos in
+        queryEngine.performSearchRepoRequest { [weak self] (repos, totalCountOfRepos) in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 ActivityIndicatorViewController.stopAnimating(in: self)
-                let resultTable = ResultTableViewController(repoArray: repos)
+                let resultTable = ResultTableViewController(repoArray: repos, totalCountOfRepos: totalCountOfRepos)
                 self.navigationController?.pushViewController(resultTable, animated: true)
             }
+        }
+    }
+    
+    /// This method is used for displaying HelloViewController. It uses the token to recieve the information about the current user. Also it saves the token into the keychain. Eventually it creates an instance of HelloViewController and pushes it into its navigation controller stack.
+    static func showSelf(using token: String) {
+        
+        let queryEngine = QueryEngine()
+        let keychain = Keychain()
+        let group = DispatchGroup()
+        
+        group.enter()
+        
+        // Getting a current user information.
+        queryEngine.getCurrentUserData(token: token) { data in
+            guard let data = data,
+                  let user = try?  JSONDecoder().decode(User.self, from: data) else { return }
+            User.currentUser = user
+            group.leave()
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            guard let currentUser = User.currentUser else { return }
+            
+            // Saving the token into the keychain for the current user. Uses userName of the current user.
+            let account = currentUser.userName
+            if keychain.savePassword(password: token, account: account) {
+                print("Token is saved!")
+            } else {
+                print("Token hasn't been saved!")
+            }
+            
+            // Let's create an instance of HelloViewController and push it into our navigation controller stack.
+            let vc = HelloViewController(user: currentUser)
+            guard let navigationController = UIApplication.shared.windows.filter({$0.isKeyWindow}).first?.rootViewController as? UINavigationController else { return }
+            navigationController.pushViewController(vc, animated: true)
         }
     }
     

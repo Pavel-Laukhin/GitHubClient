@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="vog-0E-yCG">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -45,24 +45,8 @@
                                                     <constraint firstAttribute="width" secondItem="Fmw-bG-A9c" secondAttribute="height" multiplier="1:1" id="ooS-8O-Z6S"/>
                                                 </constraints>
                                             </imageView>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="kv8-BJ-z2h">
-                                                <rect key="frame" x="97" y="294" width="220" height="34"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="220" id="UPg-Mo-oOz"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
-                                            </textField>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Login or email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="klE-8Y-PXU">
-                                                <rect key="frame" x="97" y="252" width="220" height="34"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="220" id="itm-tx-FlV"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                <textInputTraits key="textInputTraits"/>
-                                            </textField>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O3J-zE-kiQ">
-                                                <rect key="frame" x="175" y="352" width="64" height="33"/>
+                                                <rect key="frame" x="175" y="302" width="64" height="33"/>
                                                 <color key="backgroundColor" systemColor="systemGreenColor"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <inset key="contentEdgeInsets" minX="6" minY="6" maxX="6" maxY="6"/>
@@ -76,15 +60,11 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstItem="klE-8Y-PXU" firstAttribute="centerX" secondItem="YDI-dp-IbT" secondAttribute="centerX" id="2pQ-G2-AlN"/>
                                             <constraint firstItem="Fmw-bG-A9c" firstAttribute="top" secondItem="YDI-dp-IbT" secondAttribute="top" id="79w-47-N3U"/>
-                                            <constraint firstItem="O3J-zE-kiQ" firstAttribute="top" secondItem="kv8-BJ-z2h" secondAttribute="bottom" constant="24" id="Hie-O9-avi"/>
                                             <constraint firstItem="O3J-zE-kiQ" firstAttribute="centerX" secondItem="YDI-dp-IbT" secondAttribute="centerX" id="IOD-cL-XaF"/>
-                                            <constraint firstItem="kv8-BJ-z2h" firstAttribute="centerX" secondItem="YDI-dp-IbT" secondAttribute="centerX" id="KyW-Re-HFU"/>
-                                            <constraint firstAttribute="bottom" secondItem="O3J-zE-kiQ" secondAttribute="bottom" constant="32" id="fft-Yw-2nF"/>
-                                            <constraint firstItem="klE-8Y-PXU" firstAttribute="top" secondItem="Fmw-bG-A9c" secondAttribute="bottom" constant="32" id="tv0-V5-wNR"/>
+                                            <constraint firstItem="O3J-zE-kiQ" firstAttribute="top" secondItem="Fmw-bG-A9c" secondAttribute="bottom" constant="82" id="SPo-Kx-90z"/>
                                             <constraint firstItem="Fmw-bG-A9c" firstAttribute="centerX" secondItem="YDI-dp-IbT" secondAttribute="centerX" id="vW9-ob-GZd"/>
-                                            <constraint firstItem="kv8-BJ-z2h" firstAttribute="top" secondItem="klE-8Y-PXU" secondAttribute="bottom" constant="8" id="wfO-jv-Q3g"/>
+                                            <constraint firstAttribute="bottom" secondItem="O3J-zE-kiQ" secondAttribute="bottom" constant="82" id="xBP-qu-wRZ"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -110,9 +90,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="FRr-60-fIS"/>
                     <connections>
-                        <outlet property="loginTextField" destination="klE-8Y-PXU" id="1D3-8h-Nmf"/>
                         <outlet property="logoView" destination="Fmw-bG-A9c" id="73r-jS-80z"/>
-                        <outlet property="passwordTextField" destination="kv8-BJ-z2h" id="n6T-lc-WFC"/>
                         <outlet property="scrollView" destination="mCU-X4-lRT" id="dCJ-xw-I2g"/>
                         <outlet property="signInButton" destination="O3J-zE-kiQ" id="w9n-If-3W0"/>
                     </connections>

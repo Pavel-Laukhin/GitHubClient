@@ -7,13 +7,12 @@
 
 import UIKit
 import Kingfisher
+import LocalAuthentication
 
 class LoginViewController: UIViewController {
 
     @IBOutlet weak var logoView: UIImageView!
     @IBOutlet weak var signInButton: UIButton!
-    @IBOutlet weak var loginTextField: UITextField!
-    @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var scrollView: AppScrollView!
     
     private let queryEngine = QueryEngine()
@@ -42,7 +41,6 @@ class LoginViewController: UIViewController {
     }
 
     private func addGitHubLogo() {
-        // Установим логотип GitHub:
         let url = URL(string: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
         logoView.kf.setImage(with: url)
     }
@@ -52,27 +50,57 @@ class LoginViewController: UIViewController {
     }
 
     @IBAction func signInButtonPressed(_ sender: UIButton) {
-        ActivityIndicatorViewController.startAnimating(in: self)
-        guard let login = loginTextField.text,
-              let password = passwordTextField.text else {
-            let ac = UIAlertController(title: "Fill the gaps", message: "Login or password is empty", preferredStyle: .alert)
-            let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
-            ac.addAction(ok)
-            present(ac, animated: true, completion: nil)
-            print(type(of: self), #function, "Login or password is empty!")
+        let keychain: KeyChainProtocol = Keychain()
+        
+        guard let currentUser = User.currentUser,
+              let token = keychain.readPassword(account: currentUser.userName) else {
+            print("The token wasn't successfully retrieved! :[")
+            ActivityIndicatorViewController.startAnimating(in: self)
+            queryEngine.openPageToLogin()
             return
         }
-        queryEngine.performLoginRequest(login: login, password: password) { [weak self] user in
-            guard let self = self else {
-                print(#function, "Can't return user")
-                return
+        print("The token was successfully retrieved! :]")
+        if biometricAuthenticationPassed() {
+            HelloViewController.showSelf(using: token)
+        } else {
+            print(#function, "Can't make TouchID/FaceID authentication")
+        }
+    }
+    
+    private func biometricAuthenticationPassed() -> Bool {
+        let authenticationContext = LAContext()
+        var authError: NSError?
+        
+        // Check for the availability of the aithentication with biometrics.
+        guard authenticationContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &authError) else {
+            
+            // Verification for using biometric data for authentication failed.
+            if let error = authError {
+                print(error.localizedDescription)
             }
-            DispatchQueue.main.async {
-                let vc = HelloViewController(user: user)
-                self.navigationController?.pushViewController(vc, animated: true)
-                ActivityIndicatorViewController.stopAnimating(in: self)
+            return false
+        }
+        
+        var isPassedAuthentication: Bool?
+        let group = DispatchGroup()
+        
+        group.enter()
+        
+        // Authentication attempt.
+        authenticationContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Use TouchID for authentication!") { sucsess, evaluateError in
+            if sucsess {
+                isPassedAuthentication = true
+                group.leave()
+            } else {
+                if let error = evaluateError {
+                    print(error.localizedDescription)
+                }
+                isPassedAuthentication = false
+                group.leave()
             }
         }
+        group.wait()
+        return isPassedAuthentication ?? false
     }
     
     // MARK: - Keyboard actions

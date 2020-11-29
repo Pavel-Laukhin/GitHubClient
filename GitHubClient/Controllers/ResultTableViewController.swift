@@ -10,10 +10,11 @@ import UIKit
 class ResultTableViewController: UIViewController {
     
     private var repoArray: [Repos.Repo]?
+    private var totalCountOfRepos: Int?
     
     private lazy var reposNumberLabel: UILabel = {
         let label = UILabel()
-        label.text = "Repositories found: \(repoArray?.count ?? 0)"
+        label.text = "Repositories found: \(totalCountOfRepos ?? 0)"
         label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -28,10 +29,11 @@ class ResultTableViewController: UIViewController {
         return tableView
     }()
     
-    init(repoArray: [Repos.Repo]) {
+    init(repoArray: [Repos.Repo], totalCountOfRepos: Int) {
         super.init(nibName: nil, bundle: nil)
         
         self.repoArray = repoArray
+        self.totalCountOfRepos = totalCountOfRepos
     }
     
     required init?(coder: NSCoder) {

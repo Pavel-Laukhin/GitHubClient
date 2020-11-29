@@ -9,8 +9,14 @@ import UIKit
 
 struct Repos: Codable {
     
+    let totalCount: Int
     let items: [Repo]
     
+    private enum CodingKeys: String, CodingKey {
+        case totalCount = "total_count"
+        case items
+    }
+
     struct Repo: Codable {
         let title: String
         let details: String?
